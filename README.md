@@ -12,6 +12,7 @@ and the Eureka Service Discovery from the [Spring Cloud Netflix](https://github.
 [![Open in Codeanywhere](https://codeanywhere.com/img/open-in-codeanywhere-btn.svg)](https://app.codeanywhere.com/#https://github.com/spring-petclinic/spring-petclinic-microservices)
 
 ## Starting services locally without Docker
+Test PR Jenkins CI
 
 Every microservice is a Spring Boot application and can be started locally using IDE or `../mvnw spring-boot:run` command.
 Please note that supporting services (Config and Discovery Server) must be started before any other application (Customers, Vets, Visits and API).
