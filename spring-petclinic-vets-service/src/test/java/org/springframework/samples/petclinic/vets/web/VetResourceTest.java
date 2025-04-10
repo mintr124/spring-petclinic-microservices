@@ -34,29 +34,50 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * @author Maciej Szarlinski
+ * Unit test for the VetResource class.
  */
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(VetResource.class)
-@ActiveProfiles("test")
+@WebMvcTest(VetResource.class)  // Chỉ test các web controller, không khởi tạo toàn bộ ứng dụng Spring Boot.
+@ActiveProfiles("test")  // Sử dụng cấu hình cho môi trường test
 class VetResourceTest {
 
     @Autowired
-    MockMvc mvc;
+    MockMvc mvc;  // MockMvc là công cụ để kiểm tra các HTTP request.
 
     @MockBean
-    VetRepository vetRepository;
+    VetRepository vetRepository;  // Mock VetRepository để không phải truy cập cơ sở dữ liệu thực.
 
     @Test
     void shouldGetAListOfVets() throws Exception {
 
+        // Tạo một đối tượng Vet mẫu để trả về trong kết quả.
         Vet vet = new Vet();
         vet.setId(1);
+        vet.setFirstName("John");
+        vet.setLastName("Doe");
 
+        // Cấu hình để mock hành vi của vetRepository.findAll()
         given(vetRepository.findAll()).willReturn(asList(vet));
 
-        mvc.perform(get("/vets").accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$[0].id").value(1));
+        // Thực hiện một HTTP GET request đến endpoint /vets và kiểm tra kết quả trả về.
+        mvc.perform(get("/vets")
+                .accept(MediaType.APPLICATION_JSON))  // Đảm bảo yêu cầu nhận dữ liệu dưới dạng JSON
+            .andExpect(status().isOk())  // Kiểm tra HTTP status code trả về là 200 OK
+            .andExpect(jsonPath("$[0].id").value(1))  // Kiểm tra ID của Vet đầu tiên trong mảng trả về.
+            .andExpect(jsonPath("$[0].firstName").value("John"))  // Kiểm tra firstName
+            .andExpect(jsonPath("$[0].lastName").value("Doe"));  // Kiểm tra lastName
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenNoVets() throws Exception {
+
+        // Mock hành vi của repository khi không có vet nào.
+        given(vetRepository.findAll()).willReturn(asList());
+
+        // Kiểm tra rằng nếu không có vet nào thì trả về danh sách rỗng.
+        mvc.perform(get("/vets")
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())  // Kiểm tra HTTP status code trả về là 200 OK
+            .andExpect(jsonPath("$").isEmpty());  // Kiểm tra rằng kết quả là một danh sách rỗng.
     }
 }
