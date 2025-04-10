@@ -112,9 +112,11 @@ pipeline {
                     for (c in jacoco.counter) {
                         if (c.attributes()['type'] == 'INSTRUCTION') {
                             instructionCounter = c
+                            echo "📊 c00: ${c}"
                             break
                         }
                     }
+                    echo "📊 instructionCounter00: ${instructionCounter}"
                     def covered = instructionCounter?.covered?.text()?.isInteger() ? instructionCounter.covered.toInteger() : 0
                     def missed  = instructionCounter?.missed?.text()?.isInteger() ? instructionCounter.missed.toInteger() : 0
 
