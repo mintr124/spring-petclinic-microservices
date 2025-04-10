@@ -151,9 +151,8 @@
                         <configuration>
                             <executable>sed</executable>
                             <arguments>
-                                <argument>-i</argument>
-                                <argument>#<!DOCTYPE#d</argument>
-                                <argument>${project.build.directory}/site/jacoco/jacoco.xml</argument>
+                                <argument>-c</argument>
+                                <argument><![CDATA[sed -i '/<!DOCTYPE/d' ${project.build.directory}/site/jacoco/jacoco.xml]]></argument>
                             </arguments>
                         </configuration>
                     </execution>
