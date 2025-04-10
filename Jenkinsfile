@@ -80,6 +80,25 @@ pipeline {
             }
         }
 
+        stage('Remove Jacoco DOCTYPE') {
+            when {
+                expression { return env.SERVICE?.trim() }
+            }
+            steps {
+                script {
+                    def jacocoXmlPath = "spring-petclinic-${env.SERVICE}/target/site/jacoco/jacoco.xml"
+                    echo "🔍 Checking for Jacoco file: ${jacocoXmlPath}"
+                    if (fileExists(jacocoXmlPath)) {
+                        echo "🧹 Removing DOCTYPE from Jacoco report..."
+                        sh "sed -i '/<!DOCTYPE/d' ${jacocoXmlPath}"
+                    } else {
+                        error "❌ Jacoco report not found at ${jacocoXmlPath}"
+                    }
+                }
+            }
+        }
+
+
         // Kiểm tra độ phủ test
         stage('Check Coverage') {
             when {
