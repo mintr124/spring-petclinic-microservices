@@ -108,6 +108,7 @@ pipeline {
                     def coverageFile = "${env.WORKSPACE}/spring-petclinic-${env.SERVICE}/target/site/jacoco/jacoco.xml"        
                     if (fileExists(coverageFile)) {
                     def jacoco = new XmlSlurper().parse(new File(coverageFile))
+                    echo "📊 Jacoco: ${jacoco}"
                     echo "📊 Full Jacoco counters: ${jacoco.counter}"
                     def instructionCounter
                     for (c in jacoco.counter) {
