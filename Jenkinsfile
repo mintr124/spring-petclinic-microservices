@@ -90,9 +90,7 @@ pipeline {
                     echo "🔍 Checking for Jacoco file: ${jacocoXmlPath}"
                     if (fileExists(jacocoXmlPath)) {
                         echo "🧹 Removing DOCTYPE from Jacoco report..."
-                         sh '''
-                            sed -i 's/<!DOCTYPE[^>]*>//' ${jacocoXmlPath}
-                         '''
+                        sh "sed -i 's/<!DOCTYPE[^>]*>//' ${jacocoXmlPath}"
                     } else {
                         error "❌ Jacoco report not found at ${jacocoXmlPath}"
                     }
