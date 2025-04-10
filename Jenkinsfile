@@ -109,25 +109,16 @@ pipeline {
                     def coverage = 0
         
                     if (fileExists(coverageFile)) {
-                        def jacoco = new XmlSlurper().parse(new File(coverageFile))
-        
-                        def missed = 0
-                        def covered = 0
-        
-                        for (c in jacoco.counter) {
-                            if (c.@type.toString() == 'INSTRUCTION') {
-                                missed = c.@missed.toInteger()
-                                covered = c.@covered.toInteger()
-                                break
-                            }
-                        }
-        
-                        coverage = (covered * 100) / (missed + covered)
-                        echo "📊 Test coverage: ${coverage}%"
-                    } else {
-                        error "❌ Coverage file not found for ${env.SERVICE}."
-                    }
-        
+                    def jacoco = new XmlSlurper().parse(new File(coverageFile))
+                    def instructionCounter = jacoco.counter.find { it.getAttribute("type") == 'INSTRUCTION' }
+                    def missed = instructionCounter.getAttribute("missed").toInteger()
+                    def covered = instructionCounter.getAttribute("covered").toInteger()
+                    coverage = (covered * 100) / (missed + covered)
+                    echo "📊 Test coverage: ${coverage}%"
+                } else {
+                    error "❌ Coverage file not found for ${env.SERVICE}."
+                }
+
                     if (coverage < env.MIN_COVERAGE.toInteger()) {
                         error "❌ Coverage below ${env.MIN_COVERAGE}%. Failing build for ${env.SERVICE}."
                     }
