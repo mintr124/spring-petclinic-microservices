@@ -98,43 +98,48 @@ pipeline {
             }
         }
 
-        // Kiểm tra độ phủ test
         stage('Check Coverage') {
             when {
                 expression { return env.SERVICE?.trim() }
             }
             steps {
                 script {
-                    def coverageFile = "${env.WORKSPACE}/spring-petclinic-${env.SERVICE}/target/site/jacoco/jacoco.xml"        
+                    def coverageFile = "${env.WORKSPACE}/spring-petclinic-${env.SERVICE}/target/site/jacoco/jacoco.xml"
                     if (fileExists(coverageFile)) {
-                        sh "cat ${coverageFile}"
+                        // Đọc nội dung file Jacoco
                         def jacocoContent = readFile(coverageFile)
+        
                         // In ra nội dung để kiểm tra
                         echo "📜 Jacoco file content:\n${jacocoContent}"
         
                         // Sử dụng Regex để tìm các giá trị "covered" và "missed" trong chuỗi
                         def pattern = /<counter type="INSTRUCTION" covered="(\d+)" missed="(\d+)"/
                         def matcher = jacocoContent =~ pattern
-
+        
                         if (matcher.find()) {
                             // Lấy giá trị covered và missed từ match
                             def covered = matcher.group(1).toInteger()
                             def missed = matcher.group(2).toInteger()
         
+                            // Tính độ phủ
                             def coverage = covered * 100 / (covered + missed)
         
                             echo "📊 Test coverage: ${coverage}%"
+        
+                            // Kiểm tra độ phủ
+                            if (coverage < env.MIN_COVERAGE.toInteger()) {
+                                error "❌ Coverage below ${env.MIN_COVERAGE}%. Failing build for ${env.SERVICE}."
+                            }
+                        } else {
+                            error "❌ No instruction counter found in Jacoco report."
                         }
-                } else {
-                    error "❌ Coverage file not found for ${env.SERVICE}."
-                }
-
-                    if (coverage < env.MIN_COVERAGE.toInteger()) {
-                        error "❌ Coverage below ${env.MIN_COVERAGE}%. Failing build for ${env.SERVICE}."
+                    } else {
+                        error "❌ Coverage file not found for ${env.SERVICE}."
                     }
                 }
             }
         }
+
 
         // Publish báo cáo coverage (JaCoCo)
         stage('Publish Coverage Report') {
