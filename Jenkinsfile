@@ -109,24 +109,22 @@ pipeline {
                     if (fileExists(coverageFile)) {
                         sh "cat ${coverageFile}"
                         def jacocoContent = readFile(coverageFile)
-                        def jacoco = new XmlSlurper().parseText(jacocoContent)
-                        echo "📊 Jacoco: ${jacoco}"
-                        echo "📊 Full Jacoco counters: ${jacoco.counter}"
-                        def instructionCounter
-                        for (c in jacoco.counter) {
-                            if (c.attributes()['type'] == 'INSTRUCTION') {
-                                instructionCounter = c
-                                echo "📊 c00: ${c}"
-                                break
-                            }
-                    }
-                    echo "📊 instructionCounter00: ${instructionCounter}"
-                    def covered = instructionCounter?.covered?.text()?.isInteger() ? instructionCounter.covered.toInteger() : 0
-                    def missed  = instructionCounter?.missed?.text()?.isInteger() ? instructionCounter.missed.toInteger() : 0
+                        // In ra nội dung để kiểm tra
+                        echo "📜 Jacoco file content:\n${jacocoContent}"
+        
+                        // Sử dụng Regex để tìm các giá trị "covered" và "missed" trong chuỗi
+                        def pattern = /<counter type="INSTRUCTION" covered="(\d+)" missed="(\d+)"/
+                        def matcher = jacocoContent =~ pattern
 
-                    def coverage = covered * 100 / (covered + missed)
-
-                    echo "📊 Test coverage: ${coverage}%"
+                        if (matcher.find()) {
+                            // Lấy giá trị covered và missed từ match
+                            def covered = matcher.group(1).toInteger()
+                            def missed = matcher.group(2).toInteger()
+        
+                            def coverage = covered * 100 / (covered + missed)
+        
+                            echo "📊 Test coverage: ${coverage}%"
+                        }
                 } else {
                     error "❌ Coverage file not found for ${env.SERVICE}."
                 }
