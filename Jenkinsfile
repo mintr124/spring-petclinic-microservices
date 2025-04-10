@@ -21,7 +21,8 @@ pipeline {
         stage('Check Changes') {
             steps {
                 script {
-                    def changes = sh(script: 'git diff --name-only $GIT_PREVIOUS_COMMIT $GIT_COMMIT', returnStdout: true).trim()
+                    sh 'git fetch origin main'
+                    def changes = sh(script: "git diff --name-only origin/main...HEAD", returnStdout: true).trim()
                     echo "Changes detected: ${changes}"
         
                     // Kiểm tra thay đổi trong thư mục dịch vụ
