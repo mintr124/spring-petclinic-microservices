@@ -98,7 +98,6 @@ pipeline {
             }
         }
 
-
         // Kiểm tra độ phủ test
         stage('Check Coverage') {
             when {
@@ -108,17 +107,27 @@ pipeline {
                 script {
                     def coverageFile = "${env.WORKSPACE}/spring-petclinic-${env.SERVICE}/target/site/jacoco/jacoco.xml"
                     def coverage = 0
-
+        
                     if (fileExists(coverageFile)) {
                         def jacoco = new XmlSlurper().parse(new File(coverageFile))
-                        def missed = jacoco.counter.find { it.@type == 'INSTRUCTION' }.@missed.toInteger()
-                        def covered = jacoco.counter.find { it.@type == 'INSTRUCTION' }.@covered.toInteger()
+        
+                        def missed = 0
+                        def covered = 0
+        
+                        for (c in jacoco.counter) {
+                            if (c.@type.toString() == 'INSTRUCTION') {
+                                missed = c.@missed.toInteger()
+                                covered = c.@covered.toInteger()
+                                break
+                            }
+                        }
+        
                         coverage = (covered * 100) / (missed + covered)
                         echo "📊 Test coverage: ${coverage}%"
                     } else {
                         error "❌ Coverage file not found for ${env.SERVICE}."
                     }
-
+        
                     if (coverage < env.MIN_COVERAGE.toInteger()) {
                         error "❌ Coverage below ${env.MIN_COVERAGE}%. Failing build for ${env.SERVICE}."
                     }
