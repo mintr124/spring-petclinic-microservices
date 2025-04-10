@@ -110,7 +110,13 @@ pipeline {
         
                     if (fileExists(coverageFile)) {
                     def jacoco = new XmlSlurper().parse(new File(coverageFile))
-                    def instructionCounter = jacoco.counter.findAll { it.@type.text() == 'INSTRUCTION' }.first()
+                    def instructionCounter
+                        for (c in jacoco.counter) {
+                            if (c.@type.text() == 'INSTRUCTION') {
+                                instructionCounter = c
+                                break
+                            }
+                        }
                     def missed = instructionCounter.getAttribute("missed").toInteger()
                     def covered = instructionCounter.getAttribute("covered").toInteger()
                     coverage = (covered * 100) / (missed + covered)
