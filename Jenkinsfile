@@ -105,9 +105,7 @@ pipeline {
             }
             steps {
                 script {
-                    def coverageFile = "${env.WORKSPACE}/spring-petclinic-${env.SERVICE}/target/site/jacoco/jacoco.xml"
-                    def coverage = 0
-        
+                    def coverageFile = "${env.WORKSPACE}/spring-petclinic-${env.SERVICE}/target/site/jacoco/jacoco.xml"        
                     if (fileExists(coverageFile)) {
                     def jacoco = new XmlSlurper().parse(new File(coverageFile))
                     def instructionCounter
