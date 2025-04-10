@@ -21,35 +21,43 @@ pipeline {
         stage('Check Changes') {
             steps {
                 script {
-                    sh 'git fetch origin main'
-                    def changes = sh(script: "git diff --name-only origin/main...HEAD", returnStdout: true).trim()
-                    echo "Changes detected: ${changes}"
+                    // Fetch đầy đủ nhánh main để tạo reference local cho origin/main
+                    sh 'git fetch origin main:refs/remotes/origin/main'
         
-                    // Kiểm tra thay đổi trong thư mục dịch vụ
-                    if (changes.contains('vets-service/')) {
+                    // Lấy danh sách file thay đổi
+                    def changes = sh(
+                        script: "git diff --name-only origin/main...HEAD",
+                        returnStdout: true
+                    ).trim().split("\n")
+        
+                    echo "Changes detected: ${changes.join(', ')}"
+        
+                    // Xác định SERVICE
+                    if (changes.any { it.startsWith('vets-service/') }) {
                         env.SERVICE = 'vets-service'
-                    } else if (changes.contains('customer-service/')) {
+                    } else if (changes.any { it.startsWith('customer-service/') }) {
                         env.SERVICE = 'customer-service'
-                    } else if (changes.contains('visit-service/')) {
+                    } else if (changes.any { it.startsWith('visit-service/') }) {
                         env.SERVICE = 'visit-service'
-                    } else if (changes.any { it.startsWith('pom.xml') || it.startsWith('Jenkinsfile') }) {
-                        // Nếu thay đổi ở thư mục root (như pom.xml hoặc Jenkinsfile), build tất cả các dịch vụ
+                    } else if (changes.any { it == 'pom.xml' || it == 'Jenkinsfile' }) {
                         env.SERVICE = 'all-services'
                     } else {
                         env.SERVICE = ''
                     }
         
-                    if (env.SERVICE == null) {
+                    // Xuất thông báo tương ứng
+                    if (env.SERVICE == '') {
                         currentBuild.result = 'SUCCESS'
-                        echo "No relevant changes detected. Skipping build and tests."
+                        echo "✅ No relevant changes detected. Skipping build and tests."
                     } else if (env.SERVICE == 'all-services') {
-                        echo "Changes detected in root directory. Building and testing all services."
+                        echo "🔁 Changes in root directory. Building and testing all services."
                     } else {
-                        echo "Changes detected in ${env.SERVICE}. Proceeding with build and tests."
+                        echo "🔧 Changes in ${env.SERVICE}. Proceeding with build and tests."
                     }
                 }
             }
         }
+
 
 
         // Test cho dịch vụ đã thay đổi
