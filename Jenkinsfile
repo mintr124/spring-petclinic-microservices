@@ -113,7 +113,7 @@ pipeline {
                         echo "📜 Jacoco file content:\n${jacocoContent}"
         
                         // Sử dụng Regex để tìm các giá trị "covered" và "missed" trong chuỗi
-                        def pattern = /<counter type="INSTRUCTION" covered="(\d+)" missed="(\d+)"/
+                        def pattern = /<counter type="INSTRUCTION" missed="(\d+)" covered="(\d+)">/
                         def matcher = jacocoContent =~ pattern
         
                         if (matcher.find()) {
