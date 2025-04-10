@@ -22,6 +22,7 @@ pipeline {
             steps {
                 script {
                     def changes = sh(script: 'git diff --name-only $GIT_PREVIOUS_COMMIT $GIT_COMMIT', returnStdout: true).trim()
+                    echo "Changes detected: ${changes}"
         
                     // Kiểm tra thay đổi trong thư mục dịch vụ
                     if (changes.contains('vets-service/')) {
