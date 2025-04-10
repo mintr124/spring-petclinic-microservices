@@ -107,16 +107,17 @@ pipeline {
                 script {
                     def coverageFile = "${env.WORKSPACE}/spring-petclinic-${env.SERVICE}/target/site/jacoco/jacoco.xml"        
                     if (fileExists(coverageFile)) {
-                    def jacoco = new XmlSlurper().parse(new File(coverageFile))
-                    echo "📊 Jacoco: ${jacoco}"
-                    echo "📊 Full Jacoco counters: ${jacoco.counter}"
-                    def instructionCounter
-                    for (c in jacoco.counter) {
-                        if (c.attributes()['type'] == 'INSTRUCTION') {
-                            instructionCounter = c
-                            echo "📊 c00: ${c}"
-                            break
-                        }
+                        sh "cat ${coverageFile}"
+                        def jacoco = new XmlSlurper().parse(new File(coverageFile))
+                        echo "📊 Jacoco: ${jacoco}"
+                        echo "📊 Full Jacoco counters: ${jacoco.counter}"
+                        def instructionCounter
+                        for (c in jacoco.counter) {
+                            if (c.attributes()['type'] == 'INSTRUCTION') {
+                                instructionCounter = c
+                                echo "📊 c00: ${c}"
+                                break
+                            }
                     }
                     echo "📊 instructionCounter00: ${instructionCounter}"
                     def covered = instructionCounter?.covered?.text()?.isInteger() ? instructionCounter.covered.toInteger() : 0
