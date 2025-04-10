@@ -130,7 +130,6 @@
 
     <build>
         <plugins>
-            <!-- JaCoCo để tạo báo cáo coverage -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -150,34 +149,8 @@
                     </execution>
                 </executions>
             </plugin>
-    
-            <!-- Dùng sed để xóa dòng DOCTYPE khỏi jacoco.xml -->
-            <plugin>
-              <groupId>org.codehaus.mojo</groupId>
-              <artifactId>exec-maven-plugin</artifactId>
-              <version>3.1.0</version>
-              <executions>
-                <execution>
-                  <id>remove-jacoco-doctype</id>
-                  <phase>verify</phase>
-                  <goals>
-                    <goal>exec</goal>
-                  </goals>
-                  <configuration>
-                    <executable>sh</executable>
-                    <arguments>
-                      <argument>-c</argument>
-                      <argument>
-                        test -f ${project.build.directory}/site/jacoco/jacoco.xml &amp;&amp; sed -i '/&lt;!DOCTYPE/d' ${project.build.directory}/site/jacoco/jacoco.xml
-                      </argument>
-                    </arguments>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
         </plugins>
     </build>
-
 
     <profiles>
         <profile>
