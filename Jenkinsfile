@@ -33,13 +33,14 @@ pipeline {
                     echo "Changes detected: ${changes.join(', ')}"
         
                     // Xác định SERVICE
-                    if (changes.any { it.startsWith('vets-service/') }) {
+                    if (changes.any { it.startsWith('spring-petclinic-vets-service/') }) {
                         env.SERVICE = 'vets-service'
-                    } else if (changes.any { it.startsWith('customer-service/') }) {
-                        env.SERVICE = 'customer-service'
-                    } else if (changes.any { it.startsWith('visit-service/') }) {
-                        env.SERVICE = 'visit-service'
-                    } else if (changes.any { it == 'pom.xml' || it == 'Jenkinsfile' }) {
+                    } else if (changes.any { it.startsWith('spring-petclinic-customers-service/') }) {
+                        env.SERVICE = 'customers-service'
+                    } else if (changes.any { it.startsWith('spring-petclinic-visits-service/') }) {
+                        env.SERVICE = 'visits-service'
+                    }
+                     else if (changes.any { it == 'pom.xml' || it == 'Jenkinsfile' }) {
                         env.SERVICE = 'all-services'
                     } else {
                         env.SERVICE = ''
