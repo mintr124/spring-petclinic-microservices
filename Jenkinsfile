@@ -115,8 +115,9 @@ pipeline {
                             break
                         }
                     }
-                    def covered = instructionCounter.covered.toInteger()
-                    def missed = instructionCounter.missed.toInteger()
+                    def covered = instructionCounter?.covered?.text()?.isInteger() ? instructionCounter.covered.toInteger() : 0
+                    def missed  = instructionCounter?.missed?.text()?.isInteger() ? instructionCounter.missed.toInteger() : 0
+
                     def coverage = covered * 100 / (covered + missed)
 
                     echo "📊 Test coverage: ${coverage}%"
