@@ -118,8 +118,10 @@ pipeline {
         
                         if (matcher.find()) {
                             // Lấy giá trị covered và missed từ match
-                            def covered = matcher.group(1).toInteger()
-                            def missed = matcher.group(2).toInteger()
+                            def missed = matcher.group(1).toInteger()
+                            echo "📜 missed: ${missed}"
+                            def covered = matcher.group(2).toInteger()
+                            echo "📜 covered: ${covered}"
         
                             // Tính độ phủ
                             def coverage = covered * 100 / (covered + missed)
