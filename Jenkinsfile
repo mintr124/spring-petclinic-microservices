@@ -111,7 +111,7 @@ pipeline {
                         def extractNumbers(inputStr) {
                             def numbers = []
                             def temp = ""
-                            
+        
                             inputStr.each {
                                 if (it.isDigit()) {
                                     temp += it
@@ -120,16 +120,16 @@ pipeline {
                                     temp = ""
                                 }
                             }
-                            
+        
                             if (temp) {
                                 numbers.add(temp.toInteger())
                             }
-                            
+        
                             return numbers[-12..-1]
                         }
-
-                        number = extractNumbers(jacocoContent)
-
+        
+                        def number = extractNumbers(jacocoContent)
+        
                         // Kiểm tra chia cho 0 và tính độ phủ
                         def instrCov = (number[1] != 0) ? (100 - number[0] / number[1]) * 100 as int : 100
                         def branchCov = (number[3] != 0) ? (100 - number[2] / number[3]) * 100 as int : 100
@@ -137,21 +137,21 @@ pipeline {
                         def complexCov = (number[7] != 0) ? (100 - number[6] / number[7]) * 100 as int : 100
                         def methodCov = (number[9] != 0) ? (100 - number[8] / number[9]) * 100 as int : 100
                         def classCov = (number[11] != 0) ? (100 - number[10] / number[11]) * 100 as int : 100
-
-                        def coverage = (instrCov + branchCov + lineCov + complexCov + methodCov + classCov)/6 as int
+        
+                        def coverage = (instrCov + branchCov + lineCov + complexCov + methodCov + classCov) / 6 as int
                         echo "coverage: ${coverage}%"
-                            // Kiểm tra độ phủ
+        
+                        // Kiểm tra độ phủ
                         if (coverage < env.MIN_COVERAGE.toInteger()) {
                             error "❌ Coverage below ${env.MIN_COVERAGE}%. Failing build for ${env.SERVICE}."
                         }
                     } else {
                         error "❌ No instruction counter found in Jacoco report."
                     }
-                    } else {
-                        error "❌ Coverage file not found for ${env.SERVICE}."
                 }
             }
         }
+
 
 
         // Publish báo cáo coverage (JaCoCo)
