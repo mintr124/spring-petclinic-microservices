@@ -19,7 +19,8 @@ def extractNumbers(inputStr) {
 }
 
 def calculateCoverage(missed, covered) {
-    def coverage = (covered != 0) ? ((covered - missed) * 100 / covered) as int : 100
+    def total = missed + covered
+    def coverage = (total != 0) ? (covered * 100 / total) as int : 100
     return coverage
 }
 
