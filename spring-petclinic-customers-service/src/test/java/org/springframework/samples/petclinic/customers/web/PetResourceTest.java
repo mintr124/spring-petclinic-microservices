@@ -25,6 +25,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import org.springframework.test.util.ReflectionTestUtils;
+
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(PetResource.class)
