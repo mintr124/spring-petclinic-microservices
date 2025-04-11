@@ -112,7 +112,7 @@ class PetResourceTest {
     @Test
     void testSaveOwner() {
         Owner owner = new Owner();
-        owner.setId(1); // mock id
+        ReflectionTestUtils.setField(owner, "id", 1); // set id dù không có setter
         owner.setFirstName("Jane");
         owner.setLastName("Doe");
         owner.setAddress("456 Another St");
