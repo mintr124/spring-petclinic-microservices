@@ -98,6 +98,27 @@ pipeline {
             }
         }
 
+        // Di chuyển định nghĩa hàm ra ngoài phần script hoặc sử dụng Closure
+        def extractNumbers(inputStr) {
+            def numbers = []
+            def temp = ""
+        
+            inputStr.each {
+                if (it.isDigit()) {
+                    temp += it
+                } else if (temp) {
+                    numbers.add(temp.toInteger())
+                    temp = ""
+                }
+            }
+        
+            if (temp) {
+                numbers.add(temp.toInteger())
+            }
+        
+            return numbers[-12..-1]
+        }
+
         stage('Check Coverage') {
             when {
                 expression { return env.SERVICE?.trim() }
@@ -108,25 +129,6 @@ pipeline {
                     if (fileExists(coverageFile)) {
                         // Đọc nội dung file Jacoco
                         def jacocoContent = readFile(coverageFile)
-                        def extractNumbers(inputStr) {
-                            def numbers = []
-                            def temp = ""
-        
-                            inputStr.each {
-                                if (it.isDigit()) {
-                                    temp += it
-                                } else if (temp) {
-                                    numbers.add(temp.toInteger())
-                                    temp = ""
-                                }
-                            }
-        
-                            if (temp) {
-                                numbers.add(temp.toInteger())
-                            }
-        
-                            return numbers[-12..-1]
-                        }
         
                         def number = extractNumbers(jacocoContent)
         
@@ -151,6 +153,7 @@ pipeline {
                 }
             }
         }
+
 
 
 
