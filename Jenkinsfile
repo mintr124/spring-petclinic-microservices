@@ -1,7 +1,6 @@
 def extractNumbers(inputStr) {
     def numbers = []
     def temp = ""
-
     inputStr.each {
         if (Character.isDigit(it as char)) {
             temp += it
@@ -10,7 +9,6 @@ def extractNumbers(inputStr) {
             temp = ""
         }
     }
-
     if (temp) {
         numbers.add(temp.toLong())
     }
@@ -19,8 +17,9 @@ def extractNumbers(inputStr) {
 }
 
 def calculateCoverage(missed, covered) {
-    def coverage = (covered != 0) ? ((covered - missed) * 100 / covered) as int : 100
-    return coverage
+    def total = missed + covered
+    def coverage = (total != 0) ? (covered * 100.0 / total) : 100.0
+    return Math.round(coverage * 100) / 100.0
 }
 
 pipeline {
@@ -65,7 +64,7 @@ pipeline {
                     } else if (env.SERVICE == 'all-services') {
                         echo "Changes in root directory. Building and testing all services."
                     } else {
-                        echo "🔧 Changes in ${env.SERVICE}. Proceeding with build and tests."
+                        echo "Changes in ${env.SERVICE}. Proceeding with build and tests."
                     }
                 }
             }
@@ -81,11 +80,10 @@ pipeline {
                     def jacocoXmlPath = "${serviceDir}/target/site/jacoco/jacoco.xml"
         
                     dir(serviceDir) {
-                        echo "🧪 Running tests for ${env.SERVICE}..."
+                        echo "Running tests for ${env.SERVICE}..."
                         sh 'mvn verify'
                     }
         
-                    echo "Removing DOCTYPE from Jacoco report..."
                     sh "sed -i 's/<!DOCTYPE[^>]*>//' ${jacocoXmlPath}"
         
                     def jacocoContent = readFile(jacocoXmlPath)
@@ -100,7 +98,7 @@ pipeline {
                         echo "${key} coverage: ${cov}%"
                     }
         
-                    def coverage = total / keys.size() as int
+                    def coverage = Math.round((total / keys.size()) * 100) / 100.0
                     echo "Average Coverage: ${coverage}%"
         
                     echo "Publishing coverage report for ${env.SERVICE}..."
