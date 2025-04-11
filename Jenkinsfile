@@ -19,7 +19,7 @@ def extractNumbers(inputStr) {
 def calculateCoverage(missed, covered) {
     def total = missed + covered
     def coverage = (total != 0) ? (covered * 100.0 / total) : 100.0
-    return Math.round(coverage * 100) / 100.0
+    return new BigDecimal(coverage).setScale(2, BigDecimal.ROUND_HALF_UP)
 }
 
 pipeline {
@@ -98,7 +98,8 @@ pipeline {
                         echo "${key} coverage: ${cov}%"
                     }
         
-                    def coverage = Math.round((total / keys.size()) * 100) / 100.0
+                    def rawCoverage = (total / keys.size()) * 100
+                    def coverage = new BigDecimal(rawCoverage).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue()
                     echo "Average Coverage: ${coverage}%"
         
                     echo "Publishing coverage report for ${env.SERVICE}..."
