@@ -19,7 +19,7 @@ def extractNumbers(inputStr) {
 def calculateCoverage(missed, covered) {
     def total = missed + covered
     def coverage = (total != 0) ? (covered * 100.0 / total) : 100.0
-    return new BigDecimal(coverage).setScale(2, BigDecimal.ROUND_HALF_UP)
+    return ((int)(coverage * 100 + 0.5)) / 100.0
 }
 
 pipeline {
@@ -95,13 +95,14 @@ pipeline {
                         def missed = number[i * 2], covered = number[i * 2 + 1]
                         def cov = calculateCoverage(missed, covered)
                         total += cov
-                        echo "${key} coverage: ${cov}%"
+                        def formattedCoverage = String.format('%.2f', cov)
+                        echo "${key} Coverage: ${formattedCoverage}%"
                     }
         
                     def rawCoverage = (total / keys.size()) * 100
-                    def coverage = new BigDecimal(rawCoverage).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue()
-                    echo "Average Coverage: ${coverage}%"
-        
+                    def coverage = ((int)(rawCoverage)) / 100.0
+                    def formattedAverageCoverage = String.format('%.2f', coverage)
+                    echo "Average Coverage: ${formattedAverageCoverage}%"
                     echo "Publishing coverage report for ${env.SERVICE}..."
                     jacoco execPattern: "${serviceDir}/target/jacoco.exec",
                            classPattern: "${serviceDir}/target/classes",
