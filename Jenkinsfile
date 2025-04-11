@@ -4,7 +4,7 @@ def extractNumbers(inputStr) {
     def temp = ""
 
     inputStr.each {
-        if (it.isDigit()) {
+        if (Character.isDigit(it as char)) {
             temp += it
         } else if (temp) {
             numbers.add(temp.toInteger())
@@ -16,7 +16,7 @@ def extractNumbers(inputStr) {
         numbers.add(temp.toInteger())
     }
 
-    return numbers[-12..-1]
+    return numbers.takeRight(12)
 }
 
 pipeline {
