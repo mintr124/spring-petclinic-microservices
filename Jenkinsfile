@@ -1,3 +1,24 @@
+// Di chuyển định nghĩa hàm ra ngoài phần script hoặc sử dụng Closure
+def extractNumbers(inputStr) {
+    def numbers = []
+    def temp = ""
+
+    inputStr.each {
+        if (it.isDigit()) {
+            temp += it
+        } else if (temp) {
+            numbers.add(temp.toInteger())
+            temp = ""
+        }
+    }
+
+    if (temp) {
+        numbers.add(temp.toInteger())
+    }
+
+    return numbers[-12..-1]
+}
+
 pipeline {
     agent any
 
@@ -96,27 +117,6 @@ pipeline {
                     }
                 }
             }
-        }
-
-        // Di chuyển định nghĩa hàm ra ngoài phần script hoặc sử dụng Closure
-        def extractNumbers(inputStr) {
-            def numbers = []
-            def temp = ""
-        
-            inputStr.each {
-                if (it.isDigit()) {
-                    temp += it
-                } else if (temp) {
-                    numbers.add(temp.toInteger())
-                    temp = ""
-                }
-            }
-        
-            if (temp) {
-                numbers.add(temp.toInteger())
-            }
-        
-            return numbers[-12..-1]
         }
 
         stage('Check Coverage') {
