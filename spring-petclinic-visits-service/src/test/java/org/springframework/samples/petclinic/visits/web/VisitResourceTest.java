@@ -18,6 +18,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Collections;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(VisitResource.class)
 @ActiveProfiles("test")
@@ -57,5 +66,41 @@ class VisitResourceTest {
             .andExpect(jsonPath("$.items[0].petId").value(111))
             .andExpect(jsonPath("$.items[1].petId").value(222))
             .andExpect(jsonPath("$.items[2].petId").value(222));
+    }
+
+    @Test
+    void testVisitBuilder() {
+        Date now = new Date();
+        Visit visit = Visit.VisitBuilder.aVisit()
+                .id(1)
+                .date(now)
+                .description("Checkup")
+                .petId(123)
+                .build();
+
+        assertEquals(1, visit.getId());
+        assertEquals(now, visit.getDate());
+        assertEquals("Checkup", visit.getDescription());
+        assertEquals(123, visit.getPetId());
+    }
+
+    @Test
+    void testSettersAndGetters() {
+        Visit visit = new Visit();
+        Date date = new Date();
+        visit.setId(2);
+        visit.setDate(date);
+        visit.setDescription("Vaccination");
+        visit.setPetId(456);
+
+        assertEquals(2, visit.getId());
+        assertEquals(date, visit.getDate());
+        assertEquals("Vaccination", visit.getDescription());
+        assertEquals(456, visit.getPetId());
+    }
+
+    @Test
+    void contextLoads() {
+        // Test khởi động context thành công
     }
 }
