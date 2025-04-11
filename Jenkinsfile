@@ -112,7 +112,8 @@ pipeline {
                             def numbers = []
                             def temp = ""
                             
-                            inputStr.each { char ->
+                            inputStr.each { 
+                                def char = it
                                 if (char.isDigit()) {
                                     temp += char
                                 } else if (temp) {
